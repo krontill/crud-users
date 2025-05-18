@@ -15,6 +15,16 @@ export class CreateUserDto {
     description: 'This is a required property',
   })
   lastName: string;
+  @ApiProperty({
+    type: String,
+    description: 'This is a required property',
+  })
+  username: string;
+  @ApiProperty({
+    type: String,
+    description: 'This is a required property',
+  })
+  password: string;
   @ApiPropertyOptional({
     type: Boolean,
     description: 'This is an optional property',

@@ -15,6 +15,16 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     description: 'This is an optional property',
   })
   lastName?: string;
+  @ApiPropertyOptional({
+    type: String,
+    description: 'This is an optional property',
+  })
+  username?: string;
+  @ApiPropertyOptional({
+    type: String,
+    description: 'This is an optional property',
+  })
+  password?: string;
   @Transform(({ value }) => {
     if (value === 'true') return true;
     if (value === 'false') return false;
