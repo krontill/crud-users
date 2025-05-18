@@ -29,6 +29,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  findOneByFirstName(firstName: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ firstName });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.usersRepository.update(+id, updateUserDto);
   }
