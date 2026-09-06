@@ -3,6 +3,21 @@ import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Request as ExpressRequest } from 'express';
+import {
+  AuthenticatedUser,
+  JwtAuthenticatedUser,
+  LoginResponse,
+} from './auth/auth.types';
+
+type LocalAuthenticatedRequest = ExpressRequest & {
+  user: AuthenticatedUser;
+  logout: (callback: (error: Error | null) => void) => void;
+};
+
+type JwtAuthenticatedRequest = ExpressRequest & {
+  user: JwtAuthenticatedUser;
+};
 
 @Controller()
 export class AppController {
@@ -18,19 +33,28 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
+  login(@Request() req: LocalAuthenticatedRequest): LoginResponse {
     return this.authService.login(req.user);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/logout')
-  async logout(@Request() req) {
-    return req.logout();
+  async logout(@Request() req: LocalAuthenticatedRequest): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      req.logout((error: Error | null) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve();
+      });
+    });
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Request() req: JwtAuthenticatedRequest): JwtAuthenticatedUser {
     return req.user;
   }
 }
