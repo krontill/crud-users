@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
+import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserQueryDto {
@@ -28,4 +28,17 @@ export class UserQueryDto {
   @Max(100)
   @IsOptional()
   limit = 10;
+
+  @ApiPropertyOptional({
+    type: Boolean,
+    description: 'Filter users by active status',
+  })
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

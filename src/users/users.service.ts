@@ -34,12 +34,16 @@ export class UsersService {
   }
 
   async findAll(query: UserQueryDto): Promise<PaginatedUsersDto> {
-    const { page, limit } = query;
+    const { page, limit, isActive } = query;
     const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .orderBy('user.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit);
+
+    if (isActive !== undefined) {
+      queryBuilder.andWhere('user.isActive = :isActive', { isActive });
+    }
 
     const [data, total] = await queryBuilder.getManyAndCount();
 
