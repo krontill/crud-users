@@ -8,16 +8,15 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { UserQueryDto } from './dto/user-query.dto';
+import { PaginatedUsersDto } from './dto/paginated-users.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -37,13 +36,14 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiResponse({
     status: 200,
-    description: 'The created record',
-    type: [User],
+    description: 'A page of users and the total number of matching users',
+    type: PaginatedUsersDto,
   })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: UserQueryDto) {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')

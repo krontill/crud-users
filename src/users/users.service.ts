@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserQueryDto } from './dto/user-query.dto';
+import { PaginatedUsersDto } from './dto/paginated-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -31,8 +33,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(query: UserQueryDto): Promise<PaginatedUsersDto> {
+    const { page, limit } = query;
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
+      .orderBy('user.id', 'ASC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return { data, total, page, limit };
   }
 
   findOne(id: number): Promise<User | null> {
