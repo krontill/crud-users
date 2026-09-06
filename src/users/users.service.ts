@@ -66,6 +66,10 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password !== undefined) {
+      updateUserDto.password = await this.hashString(updateUserDto.password);
+    }
+
     await this.usersRepository.update(+id, updateUserDto);
   }
 
