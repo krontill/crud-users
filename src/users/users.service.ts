@@ -28,7 +28,7 @@ export class UsersService {
     user.lastName = createUserDto.lastName;
     user.username = createUserDto.username;
     user.password = hash;
-    user.isActive = true;
+    user.isActive = createUserDto.isActive ?? true;
 
     return this.usersRepository.save(user);
   }
