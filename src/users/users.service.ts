@@ -34,12 +34,19 @@ export class UsersService {
   }
 
   async findAll(query: UserQueryDto): Promise<PaginatedUsersDto> {
-    const { page, limit, isActive } = query;
+    const { page, limit, isActive, search } = query;
     const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .orderBy('user.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit);
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(LOWER(user.firstName) LIKE LOWER(:search) OR LOWER(user.lastName) LIKE LOWER(:search) OR LOWER(user.username) LIKE LOWER(:search))',
+        { search: `%${search}%` },
+      );
+    }
 
     if (isActive !== undefined) {
       queryBuilder.andWhere('user.isActive = :isActive', { isActive });

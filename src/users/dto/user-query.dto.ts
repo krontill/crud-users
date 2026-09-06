@@ -1,5 +1,13 @@
 import { Type, Transform } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserQueryDto {
@@ -41,4 +49,13 @@ export class UserQueryDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Case-insensitive match against first name, last name, or username',
+  })
+  @IsString()
+  @MaxLength(255)
+  @IsOptional()
+  search?: string;
 }
